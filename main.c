@@ -1,7 +1,5 @@
 #include "main.h"
 
-void execmd(char **argv);
-
 int main(int ac, char **argv){
 	char *prompt = "#cisfun$ ";
 	char *lineptr = NULL, *lineptr_copy = NULL;
