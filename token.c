@@ -21,5 +21,5 @@ int tokenize_input(char *input, char **tokens)
 	}
 	tokens[i] = NULL;
 
-	   return (i);
+	return (i);
 }

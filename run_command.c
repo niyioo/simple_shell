@@ -31,5 +31,5 @@ void run_command(char *command, char **args)
 		do {
 			waitpid(pid, &status, WUNTRACED);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-		        }
+	}
 }
