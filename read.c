@@ -6,12 +6,26 @@
  *
  * Return: The number of characters read
  */
+
 ssize_t read_command(char *buffer, size_t buffer_size)
 {
-	ssize_t read_count;
+	if (fgets(buffer, buffer_size, stdin) != NULL) {
+		size_t length = strlen(buffer);
 
-	read_count = read(STDIN_FILENO, buffer, BUFFER_SIZE);
-	buffer[read_count - 1] = '\0';
+		if (length > 0 && buffer[length - 1] == '\n') {
+			buffer[length - 1] = '\0';
+			return (length - 1);
+		}
 
-	return (read_count);
+		return (length);
+	}
+
+	if (feof(stdin))
+	{
+		return (0);
+	}
+	else
+	{
+		return (-1);
+	}
 }

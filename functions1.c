@@ -82,5 +82,5 @@ void execute_unsetenv(char *variable)
 	if (unsetenv(variable) != 0)
 	{
 		fprintf(stderr, "Error: Failed to unset environment variable\n");
-		        }
+	}
 }

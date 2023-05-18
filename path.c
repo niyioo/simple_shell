@@ -1,7 +1,5 @@
 #include "shell.h"
 
-extern char **environ;
-
 /**
  * _getenv - gets an environment variable
  * @name: name of the environment variable to get
@@ -169,7 +167,6 @@ char *str_concat(const char *str1, const char *str2, char delimiter)
 	size_t str1_len = strlen(str1);
 	size_t str2_len = strlen(str2);
 
-	// Allocate memory for the concatenated string
 	char *concatenated = malloc(str1_len + str2_len + 2);
 	if (concatenated == NULL)
 		return (NULL);
