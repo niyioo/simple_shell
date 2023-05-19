@@ -8,11 +8,17 @@
  * no argument is provided, it changes to the home directory. It also updates
  * the value of the "PWD" environment variable.
  */
+
 void execute_cd(char *directory)
 {
 	if (directory == NULL)
 	{
 		directory = getenv("HOME");
+	}
+	else if (strcmp(directory, "-") == 0)
+	{
+		directory = getenv("OLDPWD");
+		printf("%s\n", directory);
 	}
 
 	if (chdir(directory) != 0)
@@ -22,9 +28,9 @@ void execute_cd(char *directory)
 	else
 	{
 		char cwd[MAX_COMMAND_LENGTH];
-
 		getcwd(cwd, sizeof(cwd));
 		setenv("PWD", cwd, 1);
+		setenv("OLDPWD", cwd, 1);
 	}
 }
 

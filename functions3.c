@@ -98,6 +98,7 @@ void prompt(void)
  * ($? and $$) in the given arguments.
  *
  * @args: The array of arguments to handle.
+ * @last_status: status
  */
 void handle_special_variables(char *args[], int last_status)
 {
@@ -126,6 +127,23 @@ void handle_special_variables(char *args[], int last_status)
 			if (path_value != NULL)
 			{
 				strcpy(args[i], path_value);
+			}
+		}
+		else if (strcmp(args[i], "\"$PATH\"") == 0)
+		{
+			char *path_value = getenv("PATH");
+
+			if (path_value != NULL)
+			{
+				int len = strlen(path_value);
+				char *quoted_path = malloc(len + 3);
+
+				if (quoted_path != NULL)
+				{
+					snprintf(quoted_path, len + 3, "\"%s\"", path_value);
+					strcpy(args[i], quoted_path);
+					free(quoted_path);
+				}
 			}
 		}
 		i++;

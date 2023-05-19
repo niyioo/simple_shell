@@ -18,7 +18,8 @@
 #define MAX_ALIASES 64
 #define MAX_PIPELINE_COMMANDS 16
 
-typedef struct {
+typedef struct
+{
 	char name[MAX_COMMAND_LENGTH];
 	char value[MAX_COMMAND_LENGTH];
 } Alias;

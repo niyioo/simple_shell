@@ -72,3 +72,22 @@ void print_error(const char *cmd, const char *msg)
 {
 	fprintf(stderr, "%s: %s\n", cmd, msg);
 }
+
+/**
+ * handle_comments - Handles comments in a string by terminating
+ * the string at the '#' character.
+ * @str: The string to handle.
+ */
+void handle_comments(char *str)
+{
+	char *comment;
+
+	/* Search for the '#' character in the string */
+	comment = strchr(str, '#');
+
+	/* If a '#' character is found, terminate the string at that point */
+	if (comment != NULL)
+	{
+		*comment = '\0';
+	}
+}

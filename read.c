@@ -3,16 +3,19 @@
 /**
  * read_command - Reads a command from the user
  * @buffer: A buffer to store the command in
+ * @buffer_size: buffer size
  *
  * Return: The number of characters read
  */
 
 ssize_t read_command(char *buffer, size_t buffer_size)
 {
-	if (fgets(buffer, buffer_size, stdin) != NULL) {
+	if (fgets(buffer, buffer_size, stdin) != NULL)
+	{
 		size_t length = strlen(buffer);
 
-		if (length > 0 && buffer[length - 1] == '\n') {
+		if (length > 0 && buffer[length - 1] == '\n')
+		{
 			buffer[length - 1] = '\0';
 			return (length - 1);
 		}
