@@ -5,6 +5,7 @@
  *
  * Return: Always returns 0
  */
+
 int error_main(void)
 {
 	char *buffer = NULL;
@@ -14,23 +15,15 @@ int error_main(void)
 
 	while (1)
 	{
-		/* Display prompt*/
 		printf("$ ");
-
-		/* Read command from standard input */
 		nread = getline(&buffer, &bufsize, stdin);
 		if (nread == -1)
 		{
-			/* End of file condition (Ctrl-D) */
 			printf("\n");
 			break;
 		}
-
-		/* Remove trailing newline character, if present */
 		if (buffer[nread - 1] == '\n')
 			buffer[nread - 1] = '\0';
-
-		/* Fork a new process */
 		pid = fork();
 		if (pid == -1)
 		{
@@ -39,9 +32,6 @@ int error_main(void)
 		}
 		else if (pid == 0)
 		{
-			/* Child process */
-
-			/* Execute the command */
 			if (execl(buffer, buffer, NULL) == -1)
 			{
 				perror("execl");
@@ -50,9 +40,6 @@ int error_main(void)
 		}
 		else
 		{
-			/* Parent process */
-
-			/* Wait for child process to finish */
 			if (waitpid(pid, NULL, 0) == -1)
 			{
 				perror("waitpid");
@@ -60,7 +47,6 @@ int error_main(void)
 			}
 		}
 	}
-
 	free(buffer);
 	exit(EXIT_SUCCESS);
 }

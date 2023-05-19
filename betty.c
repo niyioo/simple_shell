@@ -27,7 +27,6 @@ int betty_main(void)
 			perror("Error: ");
 			exit(EXIT_FAILURE);
 		}
-
 		pid = fork();
 		if (pid == -1)
 		{
@@ -47,6 +46,5 @@ int betty_main(void)
 			wait(NULL);
 		}
 	}
-
 	return (0);
 }

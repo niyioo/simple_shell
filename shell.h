@@ -53,7 +53,7 @@ void replace_variables(char *args[]);
 void execute_shell(char *program_name);
 char *replace_substring(const char *string, const char *pattern, const char *replacement);
 char *expand_variables(const char *command, int last_status);
-void handle_special_variables(char *args[]);
+void handle_special_variables(char *args[], int last_status);
 char **split_logical_operators(const char *string, const char *delimiter);
 int execute_logical_operators(char *program_name, char **commands, int and_operator);
 

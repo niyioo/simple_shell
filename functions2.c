@@ -122,29 +122,30 @@ char *replace_variable(char *input)
 }
 
 /**
- * Replaces variables in the argument array with their corresponding values.
- * Variables are identified by the format '$' followed by a special character or sequence.
- * Supported variables:
- *  - $? : Represents the exit status of the last command executed.
- *  - $$ : Represents the process ID of the shell.
+ * replace_variables - Replaces variables in the argument array
+ * with their corresponding values.
  *
- * @param args The argument array to replace variables in.
+ * @args: The argument array to replace variables in.
  */
+
 void replace_variables(char *args[])
 {
-	for (int i = 0; args[i] != NULL; i++) {
-		// Handle $? variable
-		if (strcmp(args[i], "$?") == 0) {
+	for (int i = 0; args[i] != NULL; i++)
+	{
+		if (strcmp(args[i], "$?") == 0)
+		{
 			int status = WEXITSTATUS(system(NULL));
 			char exit_status[16];
+
 			sprintf(exit_status, "%d", status);
 			free(args[i]);
 			args[i] = strdup(exit_status);
 		}
-		// Handle $$ variable
-		else if (strcmp(args[i], "$$") == 0) {
+		else if (strcmp(args[i], "$$") == 0)
+		{
 			pid_t pid = getpid();
 			char process_id[16];
+
 			sprintf(process_id, "%d", pid);
 			free(args[i]);
 			args[i] = strdup(process_id);

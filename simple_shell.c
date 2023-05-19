@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
 
 				if (arg_count > 0) {
 					// Handle special variables
-					handle_special_variables(args);
+					handle_special_variables(args, last_status);
 
 					if (strcmp(args[0], "alias") == 0) {
 						execute_alias(args[1], args [2]);
