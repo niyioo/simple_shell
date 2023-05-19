@@ -11,16 +11,19 @@
  */
 
 int execute_command(char *program_name, char *command, char *args[]) {
-	if (strcmp(command, "exit") == 0) {
-		// Handle the 'exit' command directly in the main process
+	// ... (existing code)
+
+	int exit_status = 0;
+
+	if (strcmp(args[0], "exit") == 0) {
 		if (args[1] != NULL) {
-			int exit_status = atoi(args[1]);
-			exit(exit_status);
+			execute_exit(args[1]);
 		} else {
 			exit(0);
 		}
 	}
 
+	// Execute the command and check for errors
 	pid_t pid;
 	int status;
 
@@ -41,30 +44,30 @@ int execute_command(char *program_name, char *command, char *args[]) {
 	} else if (pid < 0) {
 		// Forking error
 		fprintf(stderr, "%s: Error: Failed to create child process\n", program_name);
-		return -1;
+		exit(EXIT_FAILURE);
 	} else {
 		// Parent process
 		do {
 			// Wait for the child process to finish
 			if (waitpid(pid, &status, 0) == -1) {
 				fprintf(stderr, "%s: Error: Waiting for child process failed\n", program_name);
-				return -1;
+				exit(EXIT_FAILURE);
 			}
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+
+		// Check for command execution errors
+		if (WIFSIGNALED(status)) {
+			fprintf(stderr, "%s: %s: terminated by signal\n", program_name, command);
+			exit_status = -1;
+		} else {
+			exit_status = WEXITSTATUS(status);
+			if (exit_status != 0) {
+				fprintf(stderr, "%s: %s: exited with status %d\n", program_name, command, exit_status);
+			}
+		}
 	}
 
-	// Execute the command and store the exit status
-	int last_status = WEXITSTATUS(status);
-
-	// Pass last_status to expand_variables
-	char *expanded_command = expand_variables(command, last_status);
-
-	// ... (existing code)
-
-	// Free expanded_command when it's no longer needed
-	free(expanded_command);
-
-	return last_status;
+	return exit_status;
 }
 
 /**
