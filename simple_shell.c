@@ -30,7 +30,8 @@ int execute_command(char *program_name, char *command, char *args[])
 	int status;
 
 	pid = fork();
-	if (pid == 0) {
+	if (pid == 0)
+	{
 		/* Child process */
 		if (isatty(STDOUT_FILENO))
 		{

@@ -17,6 +17,7 @@
 #define MAX_ARGUMENTS 64
 #define MAX_ALIASES 64
 #define MAX_PIPELINE_COMMANDS 16
+#define MAX_ARGS 10
 
 typedef struct
 {
@@ -41,22 +42,26 @@ int execute(char **args);
 void execute_env(void);
 ssize_t custom_getline(char *buffer, size_t buffer_size);
 void execute_exit(char *status);
+void execute_alias(char *name, char *value);
 void execute_setenv(char *variable, char *value);
 void execute_unsetenv(char *variable);
 void execute_cd(char *directory);
-void execute_alias(char *name, char *value);
 char *replace_variable(char *input);
 void execute_pipeline(char *program_name, char **commands, int num_commands);
 int execute_command(char *program_name, char *command, char *args[]);
 int main(int argc, char *argv[]);
 void parse_arguments(char *command, char *args[]);
 void replace_variables(char *args[]);
-void execute_shell(char *program_name);
 char *replace_substring(const char *string, const char *pattern, const char *replacement);
 char *expand_variables(const char *command, int last_status);
 void handle_special_variables(char *args[], int last_status);
 char **split_logical_operators(const char *string, const char *delimiter);
 int execute_logical_operators(char *program_name, char **commands, int and_operator);
+void tokenize_command(char *command, char *args[], const char *delimiters);
+char *find_next_token(char *str, const char *delimiters);
+void execute_unalias(char *alias_name);
+void execute_help(char *program_name);
+int execute_shell(char program_name);
 
 void shell_loop(void);
 
