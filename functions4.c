@@ -10,7 +10,8 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 {
 	int pipes[MAX_PIPELINE_COMMANDS - 1][2];
 	int i, j;
-	char *command = commands[i];
+	char *command;
+	char *args[MAX_ARGUMENTS];
 
 	for (i = 0; i < num_commands - 1; i++)
 	{
@@ -51,8 +52,7 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 				close(pipes[j][1]);
 			}
 
-			char *args[MAX_ARGUMENTS];
-
+			command = commands[i];
 			parse_arguments(command, args);
 			execute_command(program_name, args[0], args);
 			exit(EXIT_SUCCESS);
@@ -110,14 +110,16 @@ void parse_arguments(char *command, char *args[])
 char **split_logical_operators(const char *string, const char *delimiter)
 {
 	char **commands = (char **)malloc(MAX_PIPELINE_COMMANDS * sizeof(char *));
+	int command_count;
+	char *token;
 
 	if (commands == NULL)
 	{
 		return (NULL);
 	}
 
-	int command_count = 0;
-	char *token = strtok((char *)string, delimiter);
+	command_count = 0;
+	token = strtok((char *)string, delimiter);
 
 	while (token != NULL && command_count < MAX_PIPELINE_COMMANDS)
 	{
@@ -159,7 +161,7 @@ int execute_logical_operators(char *program_name, char **commands, int and_opera
 			return (1);
 		}
 
-		**split_args = split_input(expanded_command);
+		split_args = split_input(expanded_command);
 
 		if (split_args == NULL)
 		{

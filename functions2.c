@@ -50,7 +50,7 @@ void execute_alias(char *name, char *value)
 
 	if (name == NULL)
 	{
-		for (**env = environ; *env != NULL; env++)
+		for (env = environ; *env != NULL; env++)
 		{
 			char *alias = strstr(*env, "alias");
 
@@ -62,7 +62,7 @@ void execute_alias(char *name, char *value)
 	}
 	else if (value == NULL)
 	{
-		for (**env = environ; *env != NULL; env++)
+		for (env = environ; *env != NULL; env++)
 		{
 			char *alias = strstr(*env, name);
 

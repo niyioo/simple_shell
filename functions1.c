@@ -11,7 +11,7 @@ void execute_env(void)
 {
 	char **env;
 
-	for (**env = environ; *env != NULL; env++)
+	for (env = environ; *env != NULL; env++)
 	{
 		printf("%s\n", *env);
 	}
@@ -30,13 +30,13 @@ ssize_t custom_getline(char *buffer, size_t buffer_size)
 	static char static_buffer[MAX_COMMAND_LENGTH];
 	static size_t index;
 	ssize_t read_count = 0;
-	char c;
+	int c;
 
 	while ((c = getchar()) != '\n')
 	{
-		if (read_count < buffer_size - 1)
+		if (read_count < (ssize_t)(buffer_size - 1))
 		{
-			static_buffer[index++] = c;
+			static_buffer[index++] = (char)c;
 			read_count++;
 		}
 	}

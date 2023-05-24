@@ -170,8 +170,9 @@ char *replace_substring(const char *string, const char *pattern, const char *rep
 	int pattern_length = strlen(pattern);
 	int replacement_length = strlen(replacement);
 	int count = 0;
+	const char *src;
 	const char *p;
-	char *dest = result;
+	char *dest;
 	int length;
 
 	for (p = string; (p = strstr(p, pattern)) != NULL; p++)
@@ -183,7 +184,8 @@ char *replace_substring(const char *string, const char *pattern, const char *rep
 		fprintf(stderr, "Error: Failed to allocate memory\n");
 		return (NULL);
 	}
-	const char *src = string;
+	dest = result;
+	src = string;
 
 	while (count > 0)
 	{

@@ -13,6 +13,8 @@
 int execute_command(char *program_name, char *command, char *args[])
 {
 	int exit_status = 0;
+	pid_t pid;
+	int status;
 
 	if (strcmp(args[0], "exit") == 0)
 	{
@@ -26,9 +28,6 @@ int execute_command(char *program_name, char *command, char *args[])
 		}
 	}
 	/* Execute the command and check for errors */
-	pid_t pid;
-	int status;
-
 	pid = fork();
 	if (pid == 0)
 	{
@@ -98,7 +97,10 @@ int main(int argc, char *argv[])
 	char *delimiters = " \t\n"; /* Delimiters used to tokenize the command */
 	int exit_shell = 0; /* Flag to determine whether to exit the shell */
 	char *program_name = argv[0]; /* Name of the shell program */
-	int last_status; /* Status of the last executed command */
+	int last_status = 0;
+	char *comment;
+	char *token;
+	int execute_next;
 
 	if (argc > 1)
 	{
@@ -113,14 +115,14 @@ int main(int argc, char *argv[])
 		while (fgets(command, sizeof(command), file) != NULL)
 		{
 			command[strcspn(command, "\n")] = '\0'; /* Remove the trailing newline character */
-			char *comment = strchr(command, '#'); /* Check for comments */
+			comment = strchr(command, '#'); /* Check for comments */
 
 			if (comment != NULL)
 			{
 				*comment = '\0'; /* Ignore everything after the comment character */
 			}
 
-			char *token = strtok(command, ";"); /* Tokenize the command by semicolon */
+			token = strtok(command, ";"); /* Tokenize the command by semicolon */
 
 			while (token != NULL)
 			{
@@ -133,7 +135,7 @@ int main(int argc, char *argv[])
 					continue;
 				}
 
-				int execute_next = 1;
+				execute_next = 1;
 
 				if (strstr(expanded_token, "&&") != NULL)
 				{
@@ -214,14 +216,14 @@ int main(int argc, char *argv[])
 			}
 
 			command[strcspn(command, "\n")] = '\0'; /* Remove the trailing newline character */
-			char *comment = strchr(command, '#'); /* Check for comments */
+			comment = strchr(command, '#'); /* Check for comments */
 
 			if (comment != NULL)
 			{
 				*comment = '\0'; /* Ignore everything after the comment character */
 			}
 
-			char *token = strtok(command, ";"); /* Tokenize the command by semicolon */
+			token = strtok(command, ";"); /* Tokenize the command by semicolon */
 
 			while (token != NULL)
 			{
@@ -234,7 +236,7 @@ int main(int argc, char *argv[])
 					continue;
 				}
 
-				int execute_next = 1;
+				execute_next = 1;
 
 				if (strstr(expanded_token, "&&") != NULL)
 				{
