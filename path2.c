@@ -71,7 +71,7 @@ int execute(char **args)
  */
 void print_error(const char *cmd, const char *msg)
 {
-	fprintf(stderr, "%s: %s\n", cmd, msg);
+	_printf("%s: %s\n", cmd, msg);
 }
 
 /**
@@ -84,7 +84,7 @@ void handle_comments(char *str)
 	char *comment;
 
 	/* Search for the '#' character in the string */
-	comment = strchr(str, '#');
+	comment = _strchr(str, '#');
 
 	/* If a '#' character is found, terminate the string at that point */
 	if (comment != NULL)

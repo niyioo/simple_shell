@@ -21,27 +21,27 @@ char **split_input(char *input)
 
 	if (input_copy == NULL)
 		return (NULL);
-	token = strtok(input_copy, DELIMITER);
+	token = _strtok(input_copy, DELIMITER);
 	while (token != NULL)
 	{
 		count++;
-		token = strtok(NULL, DELIMITER);
+		token = _strtok(NULL, DELIMITER);
 	}
 	free(input_copy);
 	arguments = malloc((count + 1) * sizeof(char *));
 	if (arguments == NULL)
 		return (NULL);
 
-	input_copy = strdup(input);
+	input_copy = _strdup(input);
 	if (input_copy == NULL)
 	{
 		free(arguments);
 		return (NULL);
 	}
-	token = strtok(input_copy, DELIMITER);
+	token = _strtok(input_copy, DELIMITER);
 	while (token != NULL)
 	{
-		arguments[i] = strdup(token);
+		arguments[i] = _strdup(token);
 		if (arguments[i] == NULL)
 		{
 			for (j = 0; j < i; j++)
@@ -51,11 +51,11 @@ char **split_input(char *input)
 			return (NULL);
 		}
 		i++;
-		token = strtok(NULL, DELIMITER);
+		token = _strtok(NULL, DELIMITER);
 	}
 	arguments[i] = NULL;
 	free(input_copy);
-	if (strchr(arguments[0], '/') == NULL)
+	if (_strchr(arguments[0], '/') == NULL)
 	{
 		char *path = find_path();
 
@@ -89,7 +89,7 @@ char **split_input(char *input)
  */
 void prompt(void)
 {
-	printf("$ ");
+	_printf("$ ");
 	fflush(stdout);
 }
 
@@ -106,42 +106,42 @@ void handle_special_variables(char *args[], int last_status)
 
 	while (args[i] != NULL)
 	{
-		if (strcmp(args[i], "$?") == 0)
+		if (_strcmp(args[i], "$?") == 0)
 		{
 			char status_str[16];
 
-			snprintf(status_str, sizeof(status_str), "%d", last_status);
-			strcpy(args[i], status_str);
+			_printf("%d", last_status);
+			_strcpy(args[i], status_str);
 		}
-		else if (strcmp(args[i], "$$") == 0)
+		else if (_strcmp(args[i], "$$") == 0)
 		{
 			char pid_str[16];
 
-			snprintf(pid_str, sizeof(pid_str), "%d", getpid());
-			strcpy(args[i], pid_str);
+			_printf("%d", getpid());
+			_strcpy(args[i], pid_str);
 		}
-		else if (strcmp(args[i], "$PATH") == 0)
+		else if (_strcmp(args[i], "$PATH") == 0)
 		{
 			char *path_value = getenv("PATH");
 
 			if (path_value != NULL)
 			{
-				strcpy(args[i], path_value);
+				_strcpy(args[i], path_value);
 			}
 		}
-		else if (strcmp(args[i], "\"$PATH\"") == 0)
+		else if (_strcmp(args[i], "\"$PATH\"") == 0)
 		{
 			char *path_value = getenv("PATH");
 
 			if (path_value != NULL)
 			{
-				int len = strlen(path_value);
+				int len = _strlen(path_value);
 				char *quoted_path = malloc(len + 3);
 
 				if (quoted_path != NULL)
 				{
-					snprintf(quoted_path, len + 3, "\"%s\"", path_value);
-					strcpy(args[i], quoted_path);
+					_printf("\"%s\"", path_value);
+					_strcpy(args[i], quoted_path);
 					free(quoted_path);
 				}
 			}
@@ -181,7 +181,7 @@ char *replace_substring(const char *string, const char *pattern, const char *rep
 			(replacement_length - pattern_length) + 1);
 	if (result == NULL)
 	{
-		fprintf(stderr, "Error: Failed to allocate memory\n");
+		_printf("Error: Failed to allocate memory\n");
 		return (NULL);
 	}
 	dest = result;
@@ -189,22 +189,22 @@ char *replace_substring(const char *string, const char *pattern, const char *rep
 
 	while (count > 0)
 	{
-		const char *match = strstr(src, pattern);
+		const char *match = _strstr(src, pattern);
 
 		if (match == NULL)
 		{
-			strcpy(dest, src);
+			_strcpy(dest, src);
 			break;
 		}
 		length = match - src;
 
-		strncpy(dest, src, length);
+		_strncpy(dest, src, length);
 		dest += length;
-		strcpy(dest, replacement);
+		_strcpy(dest, replacement);
 		dest += replacement_length;
 		src = match + pattern_length;
 		count--;
 	}
-	strcpy(dest, src);
+	_strcpy(dest, src);
 	return (result);
 }

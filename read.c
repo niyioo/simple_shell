@@ -12,7 +12,7 @@ ssize_t read_command(char *buffer, size_t buffer_size)
 {
 	if (fgets(buffer, buffer_size, stdin) != NULL)
 	{
-		size_t length = strlen(buffer);
+		size_t length = _strlen(buffer);
 
 		if (length > 0 && buffer[length - 1] == '\n')
 		{

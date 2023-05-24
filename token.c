@@ -12,12 +12,12 @@ int tokenize_input(char *input, char **tokens)
 	char *token;
 	int i = 0;
 
-	token = strtok(input, " \n");
+	token = _strtok(input, " \n");
 	while (token != NULL)
 	{
 		tokens[i] = token;
 		i++;
-		token = strtok(NULL, " \n");
+		token = _strtok(NULL, " \n");
 	}
 	tokens[i] = NULL;
 
@@ -41,12 +41,12 @@ int tokenize_input(char *input, char **tokens)
 void tokenize_command(char *command, char *args[], const char *delimiters)
 {
 	int i = 0;
-	char *token = strtok(command, delimiters);
+	char *token = _strtok(command, delimiters);
 
 	while (token != NULL && i < MAX_ARGS - 1)
 	{
 		args[i++] = token;
-		token = strtok(NULL, delimiters);
+		token = _strtok(NULL, delimiters);
 	}
 
 	args[i] = NULL;
@@ -62,7 +62,7 @@ void tokenize_command(char *command, char *args[], const char *delimiters)
 char *find_next_token(char *str, const char *delimiters)
 {
 	/* Implement the logic to find the next token */
-	char *token = strtok(str, delimiters);
+	char *token = _strtok(str, delimiters);
 
 	return (token);
 }
@@ -75,7 +75,7 @@ char *find_next_token(char *str, const char *delimiters)
 void execute_unalias(char *alias_name)
 {
 	/* Implement the logic for the unalias command */
-	printf("Removing alias: %s\n", alias_name);
+	_printf("Removing alias: %s\n", alias_name);
 }
 
 /**
@@ -86,5 +86,5 @@ void execute_unalias(char *alias_name)
 void execute_help(char *program_name)
 {
 	/* Implement the logic for the help command */
-	printf("Help command executed for %s\n", program_name);
+	_printf("Help command executed for %s\n", program_name);
 }

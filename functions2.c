@@ -15,15 +15,15 @@ void execute_cd(char *directory)
 	{
 		directory = getenv("HOME");
 	}
-	else if (strcmp(directory, "-") == 0)
+	else if (_strcmp(directory, "-") == 0)
 	{
 		directory = getenv("OLDPWD");
-		printf("%s\n", directory);
+		_printf("%s\n", directory);
 	}
 
 	if (chdir(directory) != 0)
 	{
-		fprintf(stderr, "Error: Failed to change directory\n");
+		_printf("Error: Failed to change directory\n");
 	}
 	else
 	{
@@ -52,11 +52,11 @@ void execute_alias(char *name, char *value)
 	{
 		for (env = environ; *env != NULL; env++)
 		{
-			char *alias = strstr(*env, "alias");
+			char *alias = _strstr(*env, "alias");
 
 			if (alias != NULL)
 			{
-				printf("%s\n", alias);
+				_printf("%s\n", alias);
 			}
 		}
 	}
@@ -64,11 +64,11 @@ void execute_alias(char *name, char *value)
 	{
 		for (env = environ; *env != NULL; env++)
 		{
-			char *alias = strstr(*env, name);
+			char *alias = _strstr(*env, name);
 
 			if (alias != NULL)
 			{
-				printf("%s\n", alias);
+				_printf("%s\n", alias);
 				break;
 			}
 		}
@@ -77,7 +77,7 @@ void execute_alias(char *name, char *value)
 	{
 		char alias[MAX_COMMAND_LENGTH];
 
-		snprintf(alias, sizeof(alias), "alias %s='%s'", name, value);
+		_printf(alias, sizeof(alias), "alias %s='%s'", name, value);
 		putenv(alias);
 	}
 }
@@ -96,8 +96,9 @@ char *replace_variable(char *input)
 {
 	char *output = malloc(MAX_COMMAND_LENGTH);
 	int index = 0;
-	int length = strlen(input);
+	int length = _strlen(input);
 	int i = 0;
+	int status = 0;
 
 	while (i < length)
 	{
@@ -108,15 +109,15 @@ char *replace_variable(char *input)
 			{
 				int status = 0;
 
-				sprintf(&output[index], "%d", status);
-				index += strlen(&output[index]);
+				_printf("%d", status);
+				index += _printf("%d", status);
 			}
 			else if (i < length && input[i] == '$')
 			{
 				pid_t pid = getpid();
 
-				sprintf(&output[index], "%d", pid);
-				index += strlen(&output[index]);
+				_printf("%d", pid);
+				index += _printf("%d", status);
 			}
 		}
 		else
@@ -142,23 +143,23 @@ void replace_variables(char *args[])
 
 	for (i = 0; args[i] != NULL; i++)
 	{
-		if (strcmp(args[i], "$?") == 0)
+		if (_strcmp(args[i], "$?") == 0)
 		{
 			int status = WEXITSTATUS(system(NULL));
 			char exit_status[16];
 
-			sprintf(exit_status, "%d", status);
+			_printf(exit_status, "%d", status);
 			free(args[i]);
-			args[i] = strdup(exit_status);
+			args[i] = _strdup(exit_status);
 		}
-		else if (strcmp(args[i], "$$") == 0)
+		else if (_strcmp(args[i], "$$") == 0)
 		{
 			pid_t pid = getpid();
 			char process_id[16];
 
-			sprintf(process_id, "%d", pid);
+			_printf(process_id, "%d", pid);
 			free(args[i]);
-			args[i] = strdup(process_id);
+			args[i] = _strdup(process_id);
 		}
 	}
 }

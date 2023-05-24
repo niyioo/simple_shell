@@ -17,7 +17,7 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 	{
 		if (pipe(pipes[i]) == -1)
 		{
-			fprintf(stderr, "%s: Error: Failed to create pipe\n", program_name);
+			_printf("%s: Error: Failed to create pipe\n", program_name);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -32,7 +32,7 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 			{
 				if (dup2(pipes[i - 1][0], STDIN_FILENO) == -1)
 				{
-					fprintf(stderr, "%s: Error: Failed to connect input from previous command\n", program_name);
+					_printf("%s: Error: Failed to connect input from previous command\n", program_name);
 					exit(EXIT_FAILURE);
 				}
 			}
@@ -41,7 +41,7 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 			{
 				if (dup2(pipes[i][1], STDOUT_FILENO) == -1)
 				{
-					fprintf(stderr, "%s: Error: Failed to connect output to next command\n", program_name);
+					_printf("%s: Error: Failed to connect output to next command\n", program_name);
 					exit(EXIT_FAILURE);
 				}
 			}
@@ -59,7 +59,7 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 		}
 		else if (pid < 0)
 		{
-			fprintf(stderr, "%s: Error: Failed to create child process\n", program_name);
+			_printf("%s: Error: Failed to create child process\n", program_name);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -83,20 +83,19 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
  * @command: The command to parse.
  * @args: The array to store the parsed arguments.
  */
+
 void parse_arguments(char *command, char *args[])
 {
-	char *token = strtok(command, " ");
-	int arg_count = 0;
+    char *token = _strtok(command, " ");
+    int i = 0;
 
-	while (token != NULL && arg_count < MAX_ARGUMENTS - 1)
-	{
-		args[arg_count] = token;
-		arg_count++;
+    while (token != NULL && i < MAX_ARGUMENTS - 1)
+    {
+        args[i++] = token;
+        token = _strtok(NULL, " ");
+    }
 
-		token = strtok(NULL, " ");
-	}
-
-	args[arg_count] = NULL;
+    args[i] = NULL;
 }
 
 /**
@@ -119,13 +118,13 @@ char **split_logical_operators(const char *string, const char *delimiter)
 	}
 
 	command_count = 0;
-	token = strtok((char *)string, delimiter);
+	token = _strtok((char *)string, delimiter);
 
 	while (token != NULL && command_count < MAX_PIPELINE_COMMANDS)
 	{
-		commands[command_count] = strdup(token);
+		commands[command_count] = _strdup(token);
 		command_count++;
-		token = strtok(NULL, delimiter);
+		token = _strtok(NULL, delimiter);
 	}
 
 	commands[command_count] = NULL;
@@ -157,7 +156,7 @@ int execute_logical_operators(char *program_name, char **commands, int and_opera
 
 		if (expanded_command == NULL)
 		{
-			fprintf(stderr, "Error: Failed to expand variables\n");
+			_printf("Error: Failed to expand variables\n");
 			return (1);
 		}
 
@@ -165,7 +164,7 @@ int execute_logical_operators(char *program_name, char **commands, int and_opera
 
 		if (split_args == NULL)
 		{
-			fprintf(stderr, "Error splitting input\n");
+			_printf("Error splitting input\n");
 			free(expanded_command);
 			return (1);
 		}
@@ -209,9 +208,9 @@ char *expand_variables(const char *command, int last_status)
 
 	while (match != NULL)
 	{
-		snprintf(status, sizeof(status), "%d", last_status);
+		_printf("%d", last_status);
 		expanded_command = replace_substring(expanded_command, pattern, status);
-		match = strstr(expanded_command, pattern);
+		match = _strstr(expanded_command, pattern);
 	}
 
 	return (expanded_command);

@@ -9,11 +9,11 @@
 char *_getenv(const char *name)
 {
 	int i = 0;
-	size_t name_len = strlen(name);
+	size_t name_len = _strlen(name);
 
 	while (environ[i])
 	{
-		if (strncmp(environ[i], name, name_len) == 0 && environ[i][name_len] == '=')
+		if (_strncmp(environ[i], name, name_len) == 0 && environ[i][name_len] == '=')
 		{
 			return (environ[i] + name_len + 1);
 		}
@@ -45,7 +45,7 @@ char **split_path(const char *path)
 	char **directories = NULL;
 	char *token;
 	int count = 0;
-	char *path_copy = strdup(path);
+	char *path_copy = _strdup(path);
 	int i = 0, j;
 
 	if (path == NULL || *path == '\0')
@@ -54,11 +54,11 @@ char **split_path(const char *path)
 	if (path_copy == NULL)
 		return (NULL);
 
-	token = strtok(path_copy, ":");
+	token = _strtok(path_copy, ":");
 	while (token != NULL)
 	{
 		count++;
-		token = strtok(NULL, ":");
+		token = _strtok(NULL, ":");
 	}
 	free(path_copy);
 
@@ -66,16 +66,16 @@ char **split_path(const char *path)
 	if (directories == NULL)
 		return (NULL);
 
-	path_copy = strdup(path);
+	path_copy = _strdup(path);
 	if (path_copy == NULL)
 	{
 		free(directories);
 		return (NULL);
 	}
-	token = strtok(path_copy, ":");
+	token = _strtok(path_copy, ":");
 	while (token != NULL)
 	{
-		directories[i] = strdup(token);
+		directories[i] = _strdup(token);
 		if (directories[i] == NULL)
 		{
 			for (j = 0; j < i; j++)
@@ -85,7 +85,7 @@ char **split_path(const char *path)
 			return (NULL);
 		}
 		i++;
-		token = strtok(NULL, ":");
+		token = _strtok(NULL, ":");
 	}
 	directories[i] = NULL;
 	free(path_copy);
@@ -151,8 +151,8 @@ char *_path(char **args)
  */
 char *str_concat(const char *str1, const char *str2, char delimiter)
 {
-	size_t str1_len = strlen(str1);
-	size_t str2_len = strlen(str2);
+	size_t str1_len = _strlen(str1);
+	size_t str2_len = _strlen(str2);
 	char *concatenated = malloc(str1_len + str2_len + 2);
 
 	if (str1 == NULL || str2 == NULL)
@@ -161,9 +161,9 @@ char *str_concat(const char *str1, const char *str2, char delimiter)
 	if (concatenated == NULL)
 		return (NULL);
 
-	strcpy(concatenated, str1);
+	_strcpy(concatenated, str1);
 	concatenated[str1_len] = delimiter;
-	strcpy(concatenated + str1_len + 1, str2);
+	_strcpy(concatenated + str1_len + 1, str2);
 
 	return (concatenated);
 }

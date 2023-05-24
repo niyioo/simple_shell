@@ -9,6 +9,10 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <stdbool.h>
 
 #define BUFFER_SIZE 1024
 #define DELIMITER " \t\r\n\a"
@@ -28,6 +32,24 @@ typedef struct
 extern char **environ;
 
 /* Function prototypes */
+char *_strncpy(char *dest, const char *src, size_t n);
+char *_strstr(const char *haystack, const char *needle);
+int _printf(const char *format, ...);
+int _putchar(char c);
+void _perror(const char *message);
+int _atoi(char*s);
+int _strlen(const char *s);
+char *_strcpy(char *dest, const char *src);
+int _strcmp(char *s1, char *s2);
+char *_strcat(char *dest, char *src);
+unsigned int _strspn(char *s, char *accept);
+int _strcspn(char *str1, char *str2);
+char *_strchr(char *s, char c);
+char *_strtok_r(char *str, const char *delim, char **saveptr);
+void *_realloc(void *ptr, size_t size);
+int _strncmp(const char *s1, const char *s2, size_t n);
+char *_strdup(const char *str);
+char *_strtok(char *str, const char *delim);
 void prompt(void);
 ssize_t read_command(char *buffer, size_t buffer_size);
 char **split_input(char *input);

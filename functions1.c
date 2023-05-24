@@ -13,7 +13,7 @@ void execute_env(void)
 
 	for (env = environ; *env != NULL; env++)
 	{
-		printf("%s\n", *env);
+		_printf("%s\n", *env);
 	}
 }
 
@@ -42,7 +42,7 @@ ssize_t custom_getline(char *buffer, size_t buffer_size)
 	}
 
 	static_buffer[index] = '\0';
-	strcpy(buffer, static_buffer);
+	_strcpy(buffer, static_buffer);
 	index = 0;
 
 	return (read_count);
@@ -70,7 +70,7 @@ void execute_setenv(char *variable, char *value)
 {
 	if (setenv(variable, value, 1) != 0)
 	{
-		fprintf(stderr, "Error: Failed to set environment variable\n");
+		_printf("Error: Failed to set environment variable\n");
 	}
 }
 
@@ -83,6 +83,6 @@ void execute_unsetenv(char *variable)
 {
 	if (unsetenv(variable) != 0)
 	{
-		fprintf(stderr, "Error: Failed to unset environment variable\n");
+		_printf("Error: Failed to unset environment variable\n");
 	}
 }

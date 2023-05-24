@@ -14,12 +14,12 @@ int betty_main(void)
 
 	while (1)
 	{
-		printf("$ ");
+		_printf("$ ");
 
 		read_count = read(STDIN_FILENO, buffer, BUFFER_SIZE);
 		if (read_count == 0)
 		{
-			putchar('\n');
+			_putchar('\n');
 			break;
 		}
 		else if (read_count < 0)

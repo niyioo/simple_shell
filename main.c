@@ -16,11 +16,12 @@ int execute_command(char *program_name, char *command, char *args[])
 	pid_t pid;
 	int status;
 
-	if (strcmp(args[0], "exit") == 0)
+	if (_strcmp(args[0], "exit") == 0)
 	{
 		if (args[1] != NULL)
 		{
-			execute_exit(args[1]);
+			exit_status = _atoi(args[1]);
+			exit(exit_status);
 		}
 		else
 		{
@@ -36,20 +37,20 @@ int execute_command(char *program_name, char *command, char *args[])
 		{
 			if (dup2(STDOUT_FILENO, STDERR_FILENO) == -1)
 			{
-				fprintf(stderr, "%s: Error: Failed to redirect standard output\n", program_name);
+				_printf("%s: Error: Failed to redirect standard output\n", program_name);
 				exit(EXIT_FAILURE);
 			}
 		}
 		if (execvp(command, args) == -1)
 		{
-			fprintf(stderr, "%s: %s: command not found\n", program_name, command);
+			_printf("%s: %s: command not found\n", program_name, command);
 			exit(EXIT_FAILURE);
 		}
 	}
 	else if (pid < 0)
 	{
 		/* Forking error */
-		fprintf(stderr, "%s: Error: Failed to create child process\n", program_name);
+		_printf("%s: Error: Failed to create child process\n", program_name);
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -59,7 +60,7 @@ int execute_command(char *program_name, char *command, char *args[])
 			/* Wait for the child process to finish */
 			if (waitpid(pid, &status, 0) == -1)
 			{
-				fprintf(stderr, "%s: Error: Waiting for child process failed\n", program_name);
+				_printf("%s: Error: Waiting for child process failed\n", program_name);
 				exit(EXIT_FAILURE);
 			}
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
@@ -67,7 +68,7 @@ int execute_command(char *program_name, char *command, char *args[])
 		/* Check for command execution errors */
 		if (WIFSIGNALED(status))
 		{
-			fprintf(stderr, "%s: %s: terminated by signal\n", program_name, command);
+			_printf("%s: %s: terminated by signal\n", program_name, command);
 			exit_status = -1;
 		}
 		else
@@ -75,7 +76,7 @@ int execute_command(char *program_name, char *command, char *args[])
 			exit_status = WEXITSTATUS(status);
 			if (exit_status != 0)
 			{
-				fprintf(stderr, "%s: %s: exited with status %d\n", program_name, command, exit_status);
+				_printf("%s: %s: exited with status %d\n", program_name, command, exit_status);
 			}
 		}
 	}
@@ -108,21 +109,21 @@ int main(int argc, char *argv[])
 
 		if (file == NULL)
 		{
-			fprintf(stderr, "Error: Failed to open file '%s'\n", argv[1]);
+			_printf("Error: Failed to open file '%s'\n", argv[1]);
 			exit(1);
 		}
 
 		while (fgets(command, sizeof(command), file) != NULL)
 		{
-			command[strcspn(command, "\n")] = '\0'; /* Remove the trailing newline character */
-			comment = strchr(command, '#'); /* Check for comments */
+			command[_strcspn(command, "\n")] = '\0'; /* Remove the trailing newline character */
+			comment = _strchr(command, '#'); /* Check for comments */
 
 			if (comment != NULL)
 			{
 				*comment = '\0'; /* Ignore everything after the comment character */
 			}
 
-			token = strtok(command, ";"); /* Tokenize the command by semicolon */
+			token = _strtok(command, ";"); /* Tokenize the command by semicolon */
 
 			while (token != NULL)
 			{
@@ -130,20 +131,20 @@ int main(int argc, char *argv[])
 
 				if (expanded_token == NULL)
 				{
-					fprintf(stderr, "Error: Failed to expand variables\n");
-					token = strtok(NULL, ";");
+					_printf("Error: Failed to expand variables\n");
+					token = _strtok(NULL, ";");
 					continue;
 				}
 
 				execute_next = 1;
 
-				if (strstr(expanded_token, "&&") != NULL)
+				if (_strstr(expanded_token, "&&") != NULL)
 				{
 					char **commands = split_logical_operators(expanded_token, "&&"); /* Split commands by logical AND */
 					execute_next = execute_logical_operators(program_name, commands, 1); /* Execute commands with logical AND */
 					free_split(commands);
 				}
-				else if (strstr(expanded_token, "||") != NULL)
+				else if (_strstr(expanded_token, "||") != NULL)
 				{
 					char **commands = split_logical_operators(expanded_token, "||"); /* Split commands by logical OR */
 					execute_next = execute_logical_operators(program_name, commands, 0); /* Execute commands with logical OR */
@@ -151,14 +152,14 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					char *arg_token = strtok(expanded_token, delimiters); /* Tokenize the expanded token by whitespace */
+					char *arg_token = _strtok(expanded_token, delimiters); /* Tokenize the expanded token by whitespace */
 					int arg_count = 0;
 
 					while (arg_token != NULL && arg_count < MAX_ARGUMENTS - 1)
 					{
 						args[arg_count] = arg_token; /* Store each argument in the args array */
 						arg_count++;
-						arg_token = strtok(NULL, delimiters);
+						arg_token = _strtok(NULL, delimiters);
 					}
 
 					args[arg_count] = NULL; /* Null-terminate the args array */
@@ -167,33 +168,33 @@ int main(int argc, char *argv[])
 					{
 						handle_special_variables(args, last_status); /* Handle special variables */
 
-						if (strcmp(args[0], "alias") == 0)
+						if (_strcmp(args[0], "alias") == 0)
 							execute_alias(args[1], args[2]); /* Execute alias command */
-						else if (strcmp(args[0], "env") == 0)
+						else if (_strcmp(args[0], "env") == 0)
 							execute_env(); /* Execute env command */
-						else if (strcmp(args[0], "exit") == 0)
+						else if (_strcmp(args[0], "exit") == 0)
 						{
 							if (args[1] != NULL)
 								execute_exit(args[1]); /* Execute exit command with an argument */
 							else
 								exit_shell = 1; /* Set exit_shell flag to exit the shell */
 						}
-						else if (strcmp(args[0], "setenv") == 0)
+						else if (_strcmp(args[0], "setenv") == 0)
 							execute_setenv(args[1], args[2]); /* Execute setenv command */
-						else if (strcmp(args[0], "unsetenv") == 0)
+						else if (_strcmp(args[0], "unsetenv") == 0)
 							execute_unsetenv(args[1]); /* Execute unsetenv command */
-						else if (strcmp(args[0], "cd") == 0)
+						else if (_strcmp(args[0], "cd") == 0)
 							execute_cd(args[1]); /* Execute cd command */
 						else
 						{
 							if (execute_command(program_name, args[0], args) == -1)
-								fprintf(stderr, "%s: command not found: %s\n", program_name, args[0]); /* Command not found */
+								_printf("%s: command not found: %s\n", program_name, args[0]); /* Command not found */
 						}
 					}
 				}
 
 				free(expanded_token);
-				token = strtok(NULL, ";");
+				token = _strtok(NULL, ";");
 
 				if (execute_next == 0)
 					break;
@@ -206,24 +207,24 @@ int main(int argc, char *argv[])
 	{
 		while (!exit_shell)
 		{
-			printf("$ ");
+			_printf("$ ");
 			fflush(stdout);
 
 			if (fgets(command, sizeof(command), stdin) == NULL)
 			{
-				printf("\n");
+				_printf("\n");
 				exit(0);
 			}
 
-			command[strcspn(command, "\n")] = '\0'; /* Remove the trailing newline character */
-			comment = strchr(command, '#'); /* Check for comments */
+			command[_strcspn(command, "\n")] = '\0'; /* Remove the trailing newline character */
+			comment = _strchr(command, '#'); /* Check for comments */
 
 			if (comment != NULL)
 			{
 				*comment = '\0'; /* Ignore everything after the comment character */
 			}
 
-			token = strtok(command, ";"); /* Tokenize the command by semicolon */
+			token = _strtok(command, ";"); /* Tokenize the command by semicolon */
 
 			while (token != NULL)
 			{
@@ -231,20 +232,20 @@ int main(int argc, char *argv[])
 
 				if (expanded_token == NULL)
 				{
-					fprintf(stderr, "Error: Failed to expand variables\n");
-					token = strtok(NULL, ";");
+					_printf("Error: Failed to expand variables\n");
+					token = _strtok(NULL, ";");
 					continue;
 				}
 
 				execute_next = 1;
 
-				if (strstr(expanded_token, "&&") != NULL)
+				if (_strstr(expanded_token, "&&") != NULL)
 				{
 					char **commands = split_logical_operators(expanded_token, "&&"); /* Split commands by logical AND */
 					execute_next = execute_logical_operators(program_name, commands, 1); /* Execute commands with logical AND */
 					free_split(commands);
 				}
-				else if (strstr(expanded_token, "||") != NULL)
+				else if (_strstr(expanded_token, "||") != NULL)
 				{
 					char **commands = split_logical_operators(expanded_token, "||"); /* Split commands by logical OR */
 					execute_next = execute_logical_operators(program_name, commands, 0); /* Execute commands with logical OR */
@@ -252,14 +253,14 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					char *arg_token = strtok(expanded_token, delimiters); /* Tokenize the expanded token by whitespace */
+					char *arg_token = _strtok(expanded_token, delimiters); /* Tokenize the expanded token by whitespace */
 					int arg_count = 0;
 
 					while (arg_token != NULL && arg_count < MAX_ARGUMENTS - 1)
 					{
 						args[arg_count] = arg_token; /* Store each argument in the args array */
 						arg_count++;
-						arg_token = strtok(NULL, delimiters);
+						arg_token = _strtok(NULL, delimiters);
 					}
 
 					args[arg_count] = NULL; /* Null-terminate the args array */
@@ -268,33 +269,33 @@ int main(int argc, char *argv[])
 					{
 						handle_special_variables(args, last_status); /* Handle special variables */
 
-						if (strcmp(args[0], "alias") == 0)
+						if (_strcmp(args[0], "alias") == 0)
 							execute_alias(args[1], args[2]); /* Execute alias command */
-						else if (strcmp(args[0], "env") == 0)
+						else if (_strcmp(args[0], "env") == 0)
 							execute_env(); /* Execute env command */
-						else if (strcmp(args[0], "exit") == 0)
+						else if (_strcmp(args[0], "exit") == 0)
 						{
 							if (args[1] != NULL)
 								execute_exit(args[1]); /* Execute exit command with an argument */
 							else
 								exit_shell = 1; /* Set exit_shell flag to exit the shell */
 						}
-						else if (strcmp(args[0], "setenv") == 0)
+						else if (_strcmp(args[0], "setenv") == 0)
 							execute_setenv(args[1], args[2]); /* Execute setenv command */
-						else if (strcmp(args[0], "unsetenv") == 0)
+						else if (_strcmp(args[0], "unsetenv") == 0)
 							execute_unsetenv(args[1]); /* Execute unsetenv command */
-						else if (strcmp(args[0], "cd") == 0)
+						else if (_strcmp(args[0], "cd") == 0)
 							execute_cd(args[1]); /* Execute cd command */
 						else
 						{
 							if (execute_command(program_name, args[0], args) == -1)
-								fprintf(stderr, "%s: command not found: %s\n", program_name, args[0]); /* Command not found */
+								_printf("%s: command not found: %s\n", program_name, args[0]); /* Command not found */
 						}
 					}
 				}
 
 				free(expanded_token);
-				token = strtok(NULL, ";");
+				token = _strtok(NULL, ";");
 
 				if (execute_next == 0)
 					break;
