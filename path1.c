@@ -42,13 +42,14 @@ char *find_path(void)
  */
 char **split_path(const char *path)
 {
-	if (path == NULL || *path == '\0')
-		return (NULL);
-
 	char **directories = NULL;
 	char *token;
 	int count = 0;
 	char *path_copy = strdup(path);
+	int i = 0, j;
+
+	if (path == NULL || *path == '\0')
+		return (NULL);
 
 	if (path_copy == NULL)
 		return (NULL);
@@ -64,7 +65,6 @@ char **split_path(const char *path)
 	directories = malloc((count + 1) * sizeof(char *));
 	if (directories == NULL)
 		return (NULL);
-	int i = 0, j;
 
 	path_copy = strdup(path);
 	if (path_copy == NULL)
@@ -102,6 +102,9 @@ char **split_path(const char *path)
 char *_path(char **args)
 {
 	char *path = find_path();
+	char **directories = split_path(path);
+	char *command = args[0];
+	int i;
 
 	if (path == NULL)
 	{
@@ -109,15 +112,11 @@ char *_path(char **args)
 		return (NULL);
 	}
 
-	char **directories = split_path(path);
-
 	if (directories == NULL)
 	{
 		print_error(args[0], "failed to split PATH");
 		return (NULL);
 	}
-	char *command = args[0];
-	int i;
 
 	for (i = 0; directories[i] != NULL; i++)
 	{
@@ -152,12 +151,12 @@ char *_path(char **args)
  */
 char *str_concat(const char *str1, const char *str2, char delimiter)
 {
-	if (str1 == NULL || str2 == NULL)
-		return (NULL);
-
 	size_t str1_len = strlen(str1);
 	size_t str2_len = strlen(str2);
 	char *concatenated = malloc(str1_len + str2_len + 2);
+
+	if (str1 == NULL || str2 == NULL)
+		return (NULL);
 
 	if (concatenated == NULL)
 		return (NULL);

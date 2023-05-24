@@ -6,11 +6,11 @@
  * @commands: An array of commands in the pipeline
  * @num_commands: The number of commands in the pipeline
  */
-
 void execute_pipeline(char *program_name, char *commands[], int num_commands)
 {
-	int pipes[num_commands - 1][2];
+	int pipes[MAX_PIPELINE_COMMANDS - 1][2];
 	int i, j;
+	char *command = commands[i];
 
 	for (i = 0; i < num_commands - 1; i++)
 	{
@@ -20,6 +20,7 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 			exit(EXIT_FAILURE);
 		}
 	}
+
 	for (i = 0; i < num_commands; i++)
 	{
 		pid_t pid = fork();
@@ -30,24 +31,26 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 			{
 				if (dup2(pipes[i - 1][0], STDIN_FILENO) == -1)
 				{
-				fprintf(stderr, "%s: Error: Failed to connect input from previous command\n", program_name);
-				exit(EXIT_FAILURE);
+					fprintf(stderr, "%s: Error: Failed to connect input from previous command\n", program_name);
+					exit(EXIT_FAILURE);
 				}
 			}
+
 			if (i < num_commands - 1)
 			{
 				if (dup2(pipes[i][1], STDOUT_FILENO) == -1)
 				{
-				fprintf(stderr, "%s: Error: Failed to connect output to next command\n", program_name);
-				exit(EXIT_FAILURE);
+					fprintf(stderr, "%s: Error: Failed to connect output to next command\n", program_name);
+					exit(EXIT_FAILURE);
 				}
 			}
+
 			for (j = 0; j < num_commands - 1; j++)
 			{
 				close(pipes[j][0]);
 				close(pipes[j][1]);
 			}
-			char *command = commands[i];
+
 			char *args[MAX_ARGUMENTS];
 
 			parse_arguments(command, args);
@@ -56,19 +59,20 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
 		}
 		else if (pid < 0)
 		{
-		fprintf(stderr, "%s: Error: Failed to create child process\n", program_name);
-		exit(EXIT_FAILURE);
+			fprintf(stderr, "%s: Error: Failed to create child process\n", program_name);
+			exit(EXIT_FAILURE);
 		}
 	}
+
 	for (i = 0; i < num_commands - 1; i++)
 	{
 		close(pipes[i][0]);
 		close(pipes[i][1]);
 	}
+
 	for (i = 0; i < num_commands; i++)
 	{
 		int status;
-
 		wait(&status);
 	}
 }
@@ -78,9 +82,7 @@ void execute_pipeline(char *program_name, char *commands[], int num_commands)
  *
  * @command: The command to parse.
  * @args: The array to store the parsed arguments.
- *
  */
-
 void parse_arguments(char *command, char *args[])
 {
 	char *token = strtok(command, " ");
@@ -93,6 +95,7 @@ void parse_arguments(char *command, char *args[])
 
 		token = strtok(NULL, " ");
 	}
+
 	args[arg_count] = NULL;
 }
 
@@ -104,7 +107,6 @@ void parse_arguments(char *command, char *args[])
  * @delimiter: The delimiter to split the string by.
  * Return: The array of tokens.
  */
-
 char **split_logical_operators(const char *string, const char *delimiter)
 {
 	char **commands = (char **)malloc(MAX_PIPELINE_COMMANDS * sizeof(char *));
@@ -113,6 +115,7 @@ char **split_logical_operators(const char *string, const char *delimiter)
 	{
 		return (NULL);
 	}
+
 	int command_count = 0;
 	char *token = strtok((char *)string, delimiter);
 
@@ -122,6 +125,7 @@ char **split_logical_operators(const char *string, const char *delimiter)
 		command_count++;
 		token = strtok(NULL, delimiter);
 	}
+
 	commands[command_count] = NULL;
 
 	return (commands);
@@ -136,12 +140,13 @@ char **split_logical_operators(const char *string, const char *delimiter)
  * @and_operator: 1 if the logical operator is &&, 0 if it is ||.
  * Return: 1 if the commands should continue executing, 0 otherwise.
  */
-
 int execute_logical_operators(char *program_name, char **commands, int and_operator)
 {
 	int command_index = 0;
 	int exit_status = 0;
-	int last_status;
+	int last_status = 0;
+	int status;
+	char **split_args;
 
 	while (commands[command_index] != NULL)
 	{
@@ -153,7 +158,8 @@ int execute_logical_operators(char *program_name, char **commands, int and_opera
 			fprintf(stderr, "Error: Failed to expand variables\n");
 			return (1);
 		}
-		char **split_args = split_input(expanded_command);
+
+		**split_args = split_input(expanded_command);
 
 		if (split_args == NULL)
 		{
@@ -161,9 +167,11 @@ int execute_logical_operators(char *program_name, char **commands, int and_opera
 			free(expanded_command);
 			return (1);
 		}
-		int status = execute_command(program_name, split_args[0], split_args);
+
+		status = execute_command(program_name, split_args[0], split_args);
 
 		free_split(split_args);
+
 		if (and_operator && status != 0)
 		{
 			free(expanded_command);
@@ -174,9 +182,11 @@ int execute_logical_operators(char *program_name, char **commands, int and_opera
 			free(expanded_command);
 			return (0);
 		}
+
 		free(expanded_command);
 		command_index++;
 	}
+
 	return (exit_status);
 }
 
@@ -185,10 +195,9 @@ int execute_logical_operators(char *program_name, char **commands, int and_opera
  * by replacing them with their values.
  *
  * @command: The command to expand variables in.
- * @last_status: status
+ * @last_status: The last command's exit status.
  * Return: The expanded command.
  */
-
 char *expand_variables(const char *command, int last_status)
 {
 	const char *pattern = "$?";

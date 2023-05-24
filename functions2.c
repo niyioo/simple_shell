@@ -46,9 +46,11 @@ void execute_cd(char *directory)
  */
 void execute_alias(char *name, char *value)
 {
+	char **env;
+
 	if (name == NULL)
 	{
-		for (char **env = environ; *env != NULL; env++)
+		for (**env = environ; *env != NULL; env++)
 		{
 			char *alias = strstr(*env, "alias");
 
@@ -60,7 +62,7 @@ void execute_alias(char *name, char *value)
 	}
 	else if (value == NULL)
 	{
-		for (char **env = environ; *env != NULL; env++)
+		for (**env = environ; *env != NULL; env++)
 		{
 			char *alias = strstr(*env, name);
 
@@ -136,7 +138,9 @@ char *replace_variable(char *input)
 
 void replace_variables(char *args[])
 {
-	for (int i = 0; args[i] != NULL; i++)
+	int i;
+
+	for (i = 0; args[i] != NULL; i++)
 	{
 		if (strcmp(args[i], "$?") == 0)
 		{

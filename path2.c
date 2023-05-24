@@ -7,9 +7,10 @@
  */
 void free_split(char **arr)
 {
+	int i;
+
 	if (arr == NULL)
 		return;
-	int i;
 
 	for (i = 0; arr[i] != NULL; i++)
 	{

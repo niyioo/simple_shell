@@ -10,12 +10,14 @@
 
 char **split_input(char *input)
 {
-	if (input == NULL || *input == '\0')
-		return (NULL);
 	char **arguments = NULL;
 	char *token;
 	int count = 0;
 	char *input_copy = strdup(input);
+	int i = 0, j = 0;
+
+	if (input == NULL || *input == '\0')
+		return (NULL);
 
 	if (input_copy == NULL)
 		return (NULL);
@@ -29,8 +31,6 @@ char **split_input(char *input)
 	arguments = malloc((count + 1) * sizeof(char *));
 	if (arguments == NULL)
 		return (NULL);
-
-	int i = 0, j = 0;
 
 	input_copy = strdup(input);
 	if (input_copy == NULL)
@@ -171,6 +171,8 @@ char *replace_substring(const char *string, const char *pattern, const char *rep
 	int replacement_length = strlen(replacement);
 	int count = 0;
 	const char *p;
+	char *dest = result;
+	int length;
 
 	for (p = string; (p = strstr(p, pattern)) != NULL; p++)
 		count++;
@@ -181,7 +183,6 @@ char *replace_substring(const char *string, const char *pattern, const char *rep
 		fprintf(stderr, "Error: Failed to allocate memory\n");
 		return (NULL);
 	}
-	char *dest = result;
 	const char *src = string;
 
 	while (count > 0)
@@ -193,7 +194,7 @@ char *replace_substring(const char *string, const char *pattern, const char *rep
 			strcpy(dest, src);
 			break;
 		}
-		int length = match - src;
+		length = match - src;
 
 		strncpy(dest, src, length);
 		dest += length;
