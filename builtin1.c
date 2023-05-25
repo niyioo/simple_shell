@@ -6,31 +6,40 @@
  */
 void builtin_cd(char **command)
 {
-	char *path;
+	char *dir;
 
-	if (command[1] == NULL || strcmp(command[1], "~") == 0)
-		path = getenv("HOME");
-	else if (strcmp(command[1], "-") == 0)
-		path = getenv("OLDPWD");
+	if (command[1] == NULL || _strcmp(command[1], "~") == 0)
+	{
+		dir = _getenv("HOME");
+		if (dir == NULL)
+		{
+			print_string("cd: no HOME or OLDPWD variable set\n", STDERR_FILENO);
+			return;
+		}
+	}
+	else if (_strcmp(command[1], "-") == 0)
+	{
+		dir = _getenv("OLDPWD");
+		if (dir == NULL)
+		{
+			print_string("cd: no previous directory found\n", STDERR_FILENO);
+			return;
+		}
+	}
 	else
-		path = command[1];
-
-	if (path == NULL)
 	{
-		fprintf(stderr, "cd: no HOME or OLDPWD variable set\n");
-		return;
+		dir = command[1];
 	}
 
-	if (chdir(path) == -1)
+	if (chdir(dir) != 0)
 	{
-		perror("cd");
-		return;
+		print_string("cd: ", STDERR_FILENO);
+		print_string(dir, STDERR_FILENO);
+		print_string(": No such file or directory\n", STDERR_FILENO);
 	}
 
-	setenv("OLDPWD", getenv("PWD"), 1);
-	setenv("PWD", getcwd(NULL, 0), 1);
+	set_special_variable("OLDPWD", _atoi(_getenv("PWD")));
 }
-
 /**
  * handle_logical_operators - Handles shell logical operators (&& and ||)
  * @command: The current command

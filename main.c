@@ -10,7 +10,7 @@
 int main(int argc __attribute__((unused)), char **argv)
 {
 	char **commands = NULL, *line = NULL, **current_command = NULL;
-	int status = 0, i, type_command = 0;
+	int status = 0, i, type_command = 0, shell_status = 0;
 
 	signal(SIGINT, handle_ctrl_c);
 	shell_name = argv[0];
@@ -22,7 +22,7 @@ int main(int argc __attribute__((unused)), char **argv)
 		if (!line)
 		{
 			free(line);
-			exit(status);
+			exit(shell_status);
 		}
 		custom_remove_newline(line);
 		ignore_comment(line);

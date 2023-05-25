@@ -88,5 +88,6 @@ char *get_variable_value(const char *var_name);
 /*main*/
 extern void handle_non_interactive(void);
 extern void initialize_command(char **current_command, int type_command);
+void builtin_exit(char **command);
 
 #endif /*SHELL_H*/

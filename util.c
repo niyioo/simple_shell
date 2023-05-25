@@ -90,7 +90,7 @@ void (*get_internal_func(char *command))(char **)
 	int i;
 
 	function_map mapping[] = {
-		{"env", custom_env}, {"exit", custom_exit}
+		{"env", custom_env}, {"exit", builtin_exit}
 	};
 
 	for (i = 0; i < 2; i++)
