@@ -61,51 +61,50 @@ void custom_exit(char **tokenized_command)
 }
 
 /**
- * custom_getline - Read a line of input from stdin
- * Return: The line read
+ * custom_getline - Reads a line of input from the user
+ *
+ * Return: The line of input as a string, or NULL on failure or EOF
  */
 char *custom_getline(void)
 {
-	static char *buffer;
-	static int buffer_index;
-	static int buffer_size;
-
-	char *line = NULL;
-	int line_index = 0;
-	char current_char;
+	static char buffer[BUFFER_SIZE];
+	static size_t buffer_pos;
+	static size_t buffer_size;
+	static char line[BUFFER_SIZE];
+	static size_t line_pos;
+	char c;
 
 	while (1)
 	{
-		if (buffer_index >= buffer_size)
+		if (buffer_pos >= buffer_size)
 		{
-			buffer = custom_realloc(buffer, (buffer_size + READ_SIZE) * sizeof(char));
-			if (!buffer)
+			ssize_t read_count = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+
+			if (read_count <= 0)
 			{
-				perror("custom_realloc");
-				exit(EXIT_FAILURE);
-			}
-			buffer_size += read(STDIN_FILENO, buffer + buffer_size, READ_SIZE);
-			if (buffer_size <= 0)
-			{
-				free(buffer);
+				if (line_pos > 0)
+				{
+					line[line_pos] = '\0';
+					return (line);
+				}
 				return (NULL);
 			}
+			buffer_pos = 0;
+			buffer_size = (size_t)read_count;
 		}
-		current_char = buffer[buffer_index++];
-		if (current_char == '\n' || current_char == EOF)
-			break;
-
-		line = custom_realloc(line, (line_index + 1) * sizeof(char));
-		if (!line)
+		c = buffer[buffer_pos++];
+		if (c == '\n')
 		{
-			perror("custom_realloc");
-			exit(EXIT_FAILURE);
+			line[line_pos] = '\0';
+			return (line);
 		}
-		line[line_index++] = current_char;
+		line[line_pos++] = c;
+		if (line_pos >= BUFFER_SIZE - 1)
+		{
+			line[BUFFER_SIZE - 1] = '\0';
+			return (line);
+		}
 	}
-	if (line)
-		line[line_index] = '\0';
-	return (line);
 }
 
 /**
