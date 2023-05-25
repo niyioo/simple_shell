@@ -1,90 +1,82 @@
 #ifndef SHELL_H
 #define SHELL_H
 
+extern char **environ;
+extern char *line;
+extern char **commands;
+extern char *shell_name;
+extern int status;
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <sys/types.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <limits.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <errno.h>
-#include <stdarg.h>
-#include <stdbool.h>
+#include <dirent.h>
+#include <signal.h>
+#include <limits.h>
 
-#define BUFFER_SIZE 1024
-#define DELIMITER " \t\r\n\a"
 
-#define MAX_COMMAND_LENGTH 1024
-#define MAX_ARGUMENTS 64
-#define MAX_ALIASES 64
-#define MAX_PIPELINE_COMMANDS 16
-#define MAX_ARGS 10
+/*constants*/
+#define EXTERNAL_COMMAND 1
+#define INTERNAL_COMMAND 2
+#define PATH_COMMAND 3
+#define INVALID_COMMAND -1
 
-typedef struct
+#define min(x, y) (((x) < (y)) ? (x) : (y))
+
+/**
+ *struct map - a struct that maps a command name to a function
+ *
+ *@command_name: name of the command
+ *@func: the function that executes the command
+ */
+
+typedef struct map
 {
-	char name[MAX_COMMAND_LENGTH];
-	char value[MAX_COMMAND_LENGTH];
-} Alias;
+	char *command_name;
+	void (*func)(char **command);
+} function_map;
 
-extern char **environ;
 
-/* Function prototypes */
-char *_strncpy(char *dest, const char *src, size_t n);
-char *_strstr(const char *haystack, const char *needle);
-int _printf(const char *format, ...);
-int _putchar(char c);
-void _perror(const char *message);
-int _atoi(char*s);
-int _strlen(const char *s);
-char *_strcpy(char *dest, const char *src);
-int _strcmp(char *s1, char *s2);
-char *_strcat(char *dest, char *src);
-unsigned int _strspn(char *s, char *accept);
-int _strcspn(char *str1, char *str2);
-char *_strchr(char *s, char c);
-char *_strtok_r(char *str, const char *delim, char **saveptr);
-void *_realloc(void *ptr, size_t size);
-int _strncmp(const char *s1, const char *s2, size_t n);
-char *_strdup(const char *str);
-char *_strtok(char *str, const char *delim);
-void prompt(void);
-ssize_t read_command(char *buffer, size_t buffer_size);
-char **split_input(char *input);
-void print_error(const char *cmd, const char *msg);
-char *_getenv(const char *name);
-char *find_path(void);
-char *_path(char **args);
-char **split_path(const char *path);
-char *str_concat(const char *str1, const char *str2, char delimiter);
-void free_split(char **array);
-int execute(char **args);
-void execute_env(void);
-ssize_t custom_getline(char *buffer, size_t buffer_size);
-void execute_exit(char *status);
-void execute_alias(char *name, char *value);
-void execute_setenv(char *variable, char *value);
-void execute_unsetenv(char *variable);
-void execute_cd(char *directory);
-char *replace_variable(char *input);
-void execute_pipeline(char *program_name, char **commands, int num_commands);
-int execute_command(char *program_name, char *command, char *args[]);
-int main(int argc, char *argv[]);
-void parse_arguments(char *command, char *args[]);
-void replace_variables(char *args[]);
-char *replace_substring(const char *string, const char *pattern, const char *replacement);
-char *expand_variables(const char *command, int last_status);
-void handle_special_variables(char *args[], int last_status);
-char **split_logical_operators(const char *string, const char *delimiter);
-int execute_logical_operators(char *program_name, char **commands, int and_operator);
-void tokenize_command(char *command, char *args[], const char *delimiters);
-char *find_next_token(char *str, const char *delimiters);
-void execute_unalias(char *alias_name);
-void execute_help(char *program_name);
-int execute_shell(char program_name);
+/*help*/
+void print_string(char *, int);
+char **custom_tokenizer(char *, char *);
+void custom_remove_newline(char *);
+int _strlen(char *);
+void _strcpy(char *, char *);
 
-void shell_loop(void);
+/*help1*/
+int _strcmp(char *, char *);
+char *_strcat(char *, char *);
+int _strspn(char *, char *);
+int _strcspn(char *, char *);
+char *_strchr(char *, char);
 
-#endif /* SHELL_H */
+/*help2*/
+char *custom_strtok_r(char *, char *, char **);
+int _atoi(char *);
+void *custom_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+void handle_ctrl_c(int);
+void ignore_comment(char *);
+
+/*util*/
+int determine_command_type(char *);
+void execute_command(char **, int);
+char *search_command_path(char *);
+void (*get_internal_func(char *))(char **);
+char *_getenv(char *);
+
+/*builtin*/
+void custom_env(char **);
+void custom_exit(char **);
+
+/*main*/
+extern void handle_non_interactive(void);
+extern void initialize_command(char **current_command, int type_command);
+
+#endif /*SHELL_H*/
+
