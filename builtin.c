@@ -108,33 +108,39 @@ char *custom_getline(void)
 }
 
 /**
- * builtin_setenv - Set or modify an environment variable
- * @command: Command arguments (setenv VARIABLE VALUE)
+ * builtin_setenv - Initialize or modify an environment variable
+ * @command: The command and arguments passed (setenv VARIABLE VALUE)
  */
 void builtin_setenv(char **command)
 {
 	if (command[1] == NULL || command[2] == NULL)
 	{
-		fprintf(stderr, "Usage: setenv VARIABLE VALUE\n");
+		print_string("setenv: Invalid command syntax\n", STDERR_FILENO);
 		return;
 	}
 
 	if (setenv(command[1], command[2], 1) == -1)
+	{
 		perror("setenv");
+		return;
+	}
 }
 
 /**
- * builtin_unsetenv - Unset an environment variable
- * @command: Command arguments (unsetenv VARIABLE)
+ * builtin_unsetenv - Remove an environment variable
+ * @command: The command and arguments passed (unsetenv VARIABLE)
  */
 void builtin_unsetenv(char **command)
 {
 	if (command[1] == NULL)
 	{
-		fprintf(stderr, "Usage: unsetenv VARIABLE\n");
+		print_string("unsetenv: Invalid command syntax\n", STDERR_FILENO);
 		return;
 	}
 
 	if (unsetenv(command[1]) == -1)
+	{
 		perror("unsetenv");
+		return;
+	}
 }
