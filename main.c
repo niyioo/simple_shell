@@ -37,11 +37,11 @@ int main(int argc __attribute__((unused)), char **argv)
 			}
 			type_command = determine_command_type(current_command[0]);
 			initialize_command(current_command, type_command);
-			if (strcmp(current_command[0], "setenv") == 0)
+			if (_strcmp(current_command[0], "setenv") == 0)
 				builtin_setenv(current_command);
-			else if (strcmp(current_command[0], "unsetenv") == 0)
+			else if (_strcmp(current_command[0], "unsetenv") == 0)
 				builtin_unsetenv(current_command);
-			else if (strcmp(current_command[0], "cd") == 0)
+			else if (_strcmp(current_command[0], "cd") == 0)
 				builtin_cd(current_command);
 			free(current_command);
 		}
