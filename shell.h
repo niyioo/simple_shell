@@ -21,6 +21,7 @@ extern int status;
 
 
 /*constants*/
+#define READ_SIZE 1024
 #define EXTERNAL_COMMAND 1
 #define INTERNAL_COMMAND 2
 #define PATH_COMMAND 3
@@ -73,10 +74,19 @@ char *_getenv(char *);
 /*builtin*/
 void custom_env(char **);
 void custom_exit(char **);
+char *custom_getline(void);
+void builtin_setenv(char **command);
+void builtin_unsetenv(char **command);
+
+/*builtin1*/
+void builtin_cd(char **command);
+int handle_logical_operators(char **command, int prev_status);
+void replace_variables(char **command);
+void set_special_variable(const char *var_name, int value);
+char *get_variable_value(const char *var_name);
 
 /*main*/
 extern void handle_non_interactive(void);
 extern void initialize_command(char **current_command, int type_command);
 
 #endif /*SHELL_H*/
-

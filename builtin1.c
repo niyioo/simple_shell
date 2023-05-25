@@ -111,5 +111,5 @@ char *get_variable_value(const char *var_name)
 	else
 	{
 		return (NULL);
-		        }
+	}
 }

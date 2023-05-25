@@ -6,7 +6,7 @@
  *
  * Return: void
  */
-void custom_env(char **command _attribute_((unused)))
+void custom_env(char **command __attribute__((unused)))
 {
 	int i;
 
