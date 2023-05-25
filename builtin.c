@@ -78,10 +78,10 @@ char *custom_getline(void)
 	{
 		if (buffer_index >= buffer_size)
 		{
-			buffer = realloc(buffer, (buffer_size + READ_SIZE) * sizeof(char));
+			buffer = custom_realloc(buffer, (buffer_size + READ_SIZE) * sizeof(char));
 			if (!buffer)
 			{
-				perror("realloc");
+				perror("custom_realloc");
 				exit(EXIT_FAILURE);
 			}
 			buffer_size += read(STDIN_FILENO, buffer + buffer_size, READ_SIZE);
@@ -95,10 +95,10 @@ char *custom_getline(void)
 		if (current_char == '\n' || current_char == EOF)
 			break;
 
-		line = realloc(line, (line_index + 1) * sizeof(char));
+		line = custom_realloc(line, (line_index + 1) * sizeof(char));
 		if (!line)
 		{
-			perror("realloc");
+			perror("custom_realloc");
 			exit(EXIT_FAILURE);
 		}
 		line[line_index++] = current_char;

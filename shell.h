@@ -21,6 +21,7 @@ extern int status;
 
 
 /*constants*/
+#define BUFFER_SIZE 1024
 #define READ_SIZE 1024
 #define EXTERNAL_COMMAND 1
 #define INTERNAL_COMMAND 2
