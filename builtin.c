@@ -6,7 +6,7 @@
  *
  * Return: void
  */
-void custom_env(char **command __attribute__((unused)))
+void custom_env(char **command _attribute_((unused)))
 {
 	int i;
 
@@ -58,4 +58,84 @@ void custom_exit(char **tokenized_command)
 	}
 	else
 		print_string("$: exit doesn't take more than one argument\n", STDERR_FILENO);
+}
+
+/**
+ * custom_getline - Read a line of input from stdin
+ * Return: The line read
+ */
+char *custom_getline(void)
+{
+	static char *buffer;
+	static int buffer_index;
+	static int buffer_size;
+
+	char *line = NULL;
+	int line_index = 0;
+	char current_char;
+
+	while (1)
+	{
+		if (buffer_index >= buffer_size)
+		{
+			buffer = realloc(buffer, (buffer_size + READ_SIZE) * sizeof(char));
+			if (!buffer)
+			{
+				perror("realloc");
+				exit(EXIT_FAILURE);
+			}
+			buffer_size += read(STDIN_FILENO, buffer + buffer_size, READ_SIZE);
+			if (buffer_size <= 0)
+			{
+				free(buffer);
+				return (NULL);
+			}
+		}
+		current_char = buffer[buffer_index++];
+		if (current_char == '\n' || current_char == EOF)
+			break;
+
+		line = realloc(line, (line_index + 1) * sizeof(char));
+		if (!line)
+		{
+			perror("realloc");
+			exit(EXIT_FAILURE);
+		}
+		line[line_index++] = current_char;
+	}
+	if (line)
+		line[line_index] = '\0';
+	return (line);
+}
+
+/**
+ * builtin_setenv - Set or modify an environment variable
+ * @command: Command arguments (setenv VARIABLE VALUE)
+ */
+void builtin_setenv(char **command)
+{
+	if (command[1] == NULL || command[2] == NULL)
+	{
+		fprintf(stderr, "Usage: setenv VARIABLE VALUE\n");
+		return;
+	}
+
+	if (setenv(command[1], command[2], 1) == -1)
+		perror("setenv");
+}
+
+/**
+ * builtin_unsetenv - Unset an environment variable
+ * @command: Command arguments (unsetenv VARIABLE)
+ */
+void builtin_unsetenv(char **command)
+{
+	if (command[1] == NULL)
+	{
+		fprintf(stderr, "Usage: unsetenv VARIABLE\n");
+		return;
+	}
+
+	if (unsetenv(command[1]) == -1)
+		perror("unsetenv");
 }
