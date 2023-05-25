@@ -18,10 +18,12 @@ extern int status;
 #include <dirent.h>
 #include <signal.h>
 #include <limits.h>
-
+#include <stdarg.h>
 
 /*constants*/
 #define BUFFER_SIZE 1024
+#define MAX_COMMAND_LENGTH 1024
+#define MAX_ALIASES 64
 #define READ_SIZE 1024
 #define EXTERNAL_COMMAND 1
 #define INTERNAL_COMMAND 2
@@ -42,6 +44,12 @@ typedef struct map
 	char *command_name;
 	void (*func)(char **command);
 } function_map;
+
+typedef struct
+{
+	char name[MAX_COMMAND_LENGTH];
+	char value[MAX_COMMAND_LENGTH];
+} Alias;
 
 
 /*help*/
@@ -90,5 +98,8 @@ char *get_variable_value(const char *var_name);
 extern void handle_non_interactive(void);
 extern void initialize_command(char **current_command, int type_command);
 void builtin_exit(char **command);
+char *_strstr(const char *haystack, const char *needle);
+int _snprintf(char *str, size_t size, const char *format, ...);
+void execute_alias(char *name, char *value);
 
 #endif /*SHELL_H*/
